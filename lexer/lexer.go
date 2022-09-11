@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"fmt"
 	"mokey/token"
 )
 
@@ -65,7 +64,6 @@ func (l *Lexer)NextToken() token.Token {
 	case ',':
 		tok = newToken(token.COMMA, l.ch)
 	case ';':
-		fmt.Println(l.ch)
 		tok = newToken(token.SEMICOLON, l.ch)
 	case '(':
 		tok = newToken(token.LPAREN, l.ch)

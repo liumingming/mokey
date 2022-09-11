@@ -1,6 +1,8 @@
 package ast
 
-import "mokey/token"
+import (
+	"mokey/token"
+)
 
 type Node interface {
 	TokenLiteral() string
