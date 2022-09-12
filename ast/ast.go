@@ -112,6 +112,7 @@ func (rs *ReturnStatement) String() string {
 type ExpressionStatement struct {
 	Token token.Token
 	Expression Expression
+	Statement Statement
 }
 
 func (es *ExpressionStatement) TokenLiteral() string {
@@ -119,6 +120,10 @@ func (es *ExpressionStatement) TokenLiteral() string {
 }
 
 func (es *ExpressionStatement)expressNode() {
+}
+
+func (es *ExpressionStatement)statementNode()()  {
+	
 }
 
 func (es *ExpressionStatement) String() string  {
