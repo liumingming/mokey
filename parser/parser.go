@@ -5,6 +5,7 @@ import (
 	"mokey/ast"
 	"mokey/lexer"
 	"mokey/token"
+	"strconv"
 )
 
 const (
@@ -16,12 +17,11 @@ const (
 	PRODUCT
 	PREFIC
 	CALL
-
 )
 
 type (
 	prefixParseFn func() ast.Expression
-	infixParseFn func(expression ast.Expression) ast.Expression
+	infixParseFn  func(expression ast.Expression) ast.Expression
 )
 
 type Parser struct {
@@ -29,19 +29,16 @@ type Parser struct {
 
 	errors []string
 
-	curToken token.Token
+	curToken  token.Token
 	peekToken token.Token
 
 	prefixParseFns map[token.TokenType]prefixParseFn
-	infixParseFns map[token.TokenType]infixParseFn
+	infixParseFns  map[token.TokenType]infixParseFn
 }
 
-
-
-
 func New(l *lexer.Lexer) *Parser {
-	p :=  &Parser{
-		l:         l,
+	p := &Parser{
+		l:      l,
 		errors: []string{},
 	}
 	p.nextToken()
@@ -49,10 +46,11 @@ func New(l *lexer.Lexer) *Parser {
 
 	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
+	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	return p
 }
 
-func (p *Parser) nextToken()  {
+func (p *Parser) nextToken() {
 	p.curToken = p.peekToken
 	p.peekToken = p.l.NextToken()
 }
@@ -71,26 +69,26 @@ func (p *Parser) ParseProgram() *ast.Program {
 	return program
 }
 
-func (p *Parser)registerPrefix(tokenType token.TokenType, fn prefixParseFn)  {
+func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
 	p.prefixParseFns[tokenType] = fn
 }
 
-func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn)  {
+func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 	p.infixParseFns[tokenType] = fn
 }
 
-func (p *Parser) parseStatement()  ast.Statement {
+func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
-	case  token.LET:
+	case token.LET:
 		return p.parseLetStatement()
-	case  token.RETURN:
+	case token.RETURN:
 		return p.parseReturnStatement()
 	default:
 		return p.parseExpressionStatement()
 	}
 }
 
-func (p *Parser)parseExpressionStatement() *ast.ExpressionStatement {
+func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	stmt := &ast.ExpressionStatement{
 		Token: p.curToken,
 	}
@@ -108,10 +106,10 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	if prefix == nil {
 		return nil
 	}
+	fmt.Println(p.prefixParseFns, p.curToken.Type)
 	leftPrefix := prefix()
 	return leftPrefix
 }
-
 
 func (p *Parser) parseLetStatement() *ast.LetStatement {
 	stmt := &ast.LetStatement{
@@ -127,11 +125,9 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		Value: p.curToken.Literal,
 	}
 
-
 	if !p.expectPeek(token.ASSIGN) {
 		return nil
 	}
-
 
 	for !p.curTokenIs(token.SEMICOLON) {
 		p.nextToken()
@@ -140,8 +136,8 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 	return stmt
 }
 
-func (p *Parser) expectPeek(t token.TokenType)  bool {
-	if  p.peekTokenIs(t) {
+func (p *Parser) expectPeek(t token.TokenType) bool {
+	if p.peekTokenIs(t) {
 		p.nextToken()
 		return true
 	} else {
@@ -150,7 +146,7 @@ func (p *Parser) expectPeek(t token.TokenType)  bool {
 	}
 }
 
-func (p *Parser) peekTokenIs(t  token.TokenType) bool  {
+func (p *Parser) peekTokenIs(t token.TokenType) bool {
 	return p.peekToken.Type == t
 }
 
@@ -158,7 +154,7 @@ func (p *Parser) curTokenIs(t token.TokenType) bool {
 	return p.curToken.Type == t
 }
 
-func (p *Parser) Errors()[]string {
+func (p *Parser) Errors() []string {
 	return p.errors
 }
 
@@ -167,9 +163,9 @@ func (p *Parser) peekError(t token.TokenType) {
 	p.errors = append(p.errors, msg)
 }
 
-func (p *Parser)parseReturnStatement() *ast.ReturnStatement {
+func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{
-		Token:       p.curToken,
+		Token: p.curToken,
 	}
 	p.nextToken()
 
@@ -185,4 +181,18 @@ func (p *Parser) parseIdentifier() ast.Expression {
 		Token: p.curToken,
 		Value: p.curToken.Literal,
 	}
+}
+
+func (p *Parser) parseIntegerLiteral() ast.Expression {
+	i := &ast.IntegerLiteral{
+		Token: p.curToken,
+	}
+	value, err := strconv.ParseInt(i.TokenLiteral(), 0, 64)
+	if err != nil {
+		msg := fmt.Sprintf("can not parse %s into int", i.TokenLiteral())
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+	i.Value = value
+	return i
 }
