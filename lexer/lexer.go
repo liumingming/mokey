@@ -5,28 +5,28 @@ import (
 )
 
 type Lexer struct {
-	input string
-	position int  //指向当前字符
-	readPosition int //指向当前字符的下一个字符
-	ch byte  //当前正在查看的字符
+	input        string
+	position     int  //指向当前字符
+	readPosition int  //指向当前字符的下一个字符
+	ch           byte //当前正在查看的字符4ww
 }
 
 func New(input string) *Lexer {
-	l :=  &Lexer{
+	l := &Lexer{
 		input: input,
 	}
 	l.readChar()
 	return l
 }
 
-func (l *Lexer)NextToken() token.Token {
+func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
 	l.skipWhitespace()
 
 	switch l.ch {
-	case '=' :
-		if  l.peekChar() == '=' {
+	case '=':
+		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
 			literal := string(ch) + string(l.ch)
@@ -34,19 +34,19 @@ func (l *Lexer)NextToken() token.Token {
 				Type:    token.EQ,
 				Literal: literal,
 			}
-		}  else {
+		} else {
 			tok = newToken(token.ASSIGN, l.ch)
 		}
-	case '+' :
+	case '+':
 		tok = newToken(token.PLUS, l.ch)
-	case '-' :
+	case '-':
 		tok = newToken(token.MINUS, l.ch)
-	case '*' :
+	case '*':
 		tok = newToken(token.ASTERISK, l.ch)
-	case '/' :
+	case '/':
 		tok = newToken(token.SLASH, l.ch)
-	case '!' :
-		if  l.peekChar() == '=' {
+	case '!':
+		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
 			literal := string(ch) + string(l.ch)
@@ -54,12 +54,12 @@ func (l *Lexer)NextToken() token.Token {
 				Type:    token.NOT_EQ,
 				Literal: literal,
 			}
-		}  else {
+		} else {
 			tok = newToken(token.BANG, l.ch)
 		}
-	case '<' :
+	case '<':
 		tok = newToken(token.LT, l.ch)
-	case '>' :
+	case '>':
 		tok = newToken(token.GT, l.ch)
 	case ',':
 		tok = newToken(token.COMMA, l.ch)
@@ -128,13 +128,13 @@ func (l *Lexer) readNumber() string {
 	return l.input[position:l.position]
 }
 
-func (l *Lexer) skipWhitespace()  {
+func (l *Lexer) skipWhitespace() {
 	for l.ch == ' ' || l.ch == '\n' || l.ch == '\t' || l.ch == '\r' {
 		l.readChar()
 	}
 }
 
-func newToken(tokenType token.TokenType, literal byte ) token.Token {
+func newToken(tokenType token.TokenType, literal byte) token.Token {
 	return token.Token{
 		Type:    tokenType,
 		Literal: string(literal),
