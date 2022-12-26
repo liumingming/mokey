@@ -1,5 +1,9 @@
 package object
 
+const (
+	IntegerObject = "INTEGER"
+)
+
 type ObjectType string
 
 type Object interface {

@@ -5,6 +5,14 @@ import (
 	"mokey/object"
 )
 
-func Eval(a ast.Node) object.Object {
+func Eval(node ast.Node) object.Object {
+	switch node := node.(type) {
+	case *ast.IntegerLiteral:
+		return &object.Integer{
+			ObjectType: object.IntegerObject,
+			Value:      node.Value,
+		}
 
+	}
+	return nil
 }
