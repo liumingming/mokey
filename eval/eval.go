@@ -1,11 +1,13 @@
 package eval
 
 import (
+	"fmt"
 	"mokey/ast"
 	"mokey/object"
 )
 
 func Eval(node ast.Node) object.Object {
+
 	switch node := node.(type) {
 	case *ast.Program:
 		return evalStatements(node.Statements)
@@ -16,7 +18,12 @@ func Eval(node ast.Node) object.Object {
 			ObjectType: object.IntegerObject,
 			Value:      node.Value,
 		}
-
+	case *ast.InfixExpression:
+		left := Eval(node.Left)
+		right := Eval(node.Right)
+		return evalInfixExpression(node.Operator, left, right)
+	default:
+		fmt.Printf("node 2 is %T type", node)
 	}
 	return nil
 }
@@ -29,4 +36,43 @@ func evalStatements(statements []ast.Statement) object.Object {
 	}
 
 	return result
+}
+
+func evalInfixExpression(operator string, left, right object.Object) object.Object {
+	switch  {
+	case left.Type() == object.IntegerObject && right.Type() == object.IntegerObject:
+		return evalIntegerInfixExpression(operator, left, right)
+	default:
+		return nil
+	}
+}
+
+func evalIntegerInfixExpression(operator string, left, right object.Object) object.Object {
+	leftVal := left.(*object.Integer).Value
+	rightVal := right.(*object.Integer).Value
+
+	switch operator {
+	case "+":
+		return &object.Integer{
+			Value:      leftVal + rightVal,
+		}
+	case "-":
+		return &object.Integer{
+			Value:      leftVal - rightVal,
+		}
+	case "*":
+		return &object.Integer{
+			Value:      leftVal * rightVal,
+		}
+	case "/":
+		return &object.Integer{
+			Value:      leftVal / rightVal,
+		}
+	case "%":
+		return &object.Integer{
+			Value:      leftVal % rightVal,
+		}
+	default:
+		return nil
+	}
 }

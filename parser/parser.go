@@ -253,7 +253,7 @@ func (p *Parser) noPrefixParserFnError(t token.TokenType)  {
 }
 
 func (p *Parser) parsePrefixExpression() ast.Expression {
-	expression := ast.PrefixExpression{
+	expression := &ast.PrefixExpression{
 		Token:    p.curToken,
 		Operator: p.curToken.Literal,
 	}
@@ -278,7 +278,7 @@ func (p  *Parser)currentPrecedence()  int {
 
 
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
-	expression := ast.InfixExpression{
+	expression := &ast.InfixExpression{
 		Token:    p.curToken,
 		Operator: p.curToken.Literal,
 		Left: left,
