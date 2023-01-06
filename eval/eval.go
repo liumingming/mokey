@@ -7,7 +7,6 @@ import (
 )
 
 func Eval(node ast.Node) object.Object {
-
 	switch node := node.(type) {
 	case *ast.Program:
 		return evalStatements(node.Statements)
@@ -16,6 +15,11 @@ func Eval(node ast.Node) object.Object {
 	case *ast.IntegerLiteral:
 		return &object.Integer{
 			ObjectType: object.IntegerObject,
+			Value:      node.Value,
+		}
+	case *ast.Boolean:
+		return &object.Boolean{
+			ObjectType: object.BooleanObject,
 			Value:      node.Value,
 		}
 	case *ast.InfixExpression:
