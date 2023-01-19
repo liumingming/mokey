@@ -2,27 +2,27 @@ package token
 
 const (
 	ILLEGAL = "ILLEGAL"
-	EOF = "EOF"
+	EOF     = "EOF"
 
 	//标识符 + 字面量
 	IDENT = "IDENT"
-	INT = "INT"
+	INT   = "INT"
 
 	//运算符
-	ASSIGN = "="
-	PLUS = "+"
-	MINUS = "-"
-	BANG = "!"
+	ASSIGN   = "="
+	PLUS     = "+"
+	MINUS    = "-"
+	BANG     = "!"
 	ASTERISK = "*"
-	SLASH = "/"
-	LT = "<"
-	GT = ">"
+	SLASH    = "/"
+	LT       = "<"
+	GT       = ">"
 
-	EQ  = "=="
+	EQ     = "=="
 	NOT_EQ = "!="
 
 	//分隔符
-	COMMA = ","
+	COMMA     = ","
 	SEMICOLON = ";"
 
 	LPAREN = "("
@@ -30,33 +30,34 @@ const (
 	LBRACE = "{"
 	RBRACE = "}"
 
+	QUOTE = "\""
+
 	//关键字
-	LET = "let"
+	LET      = "let"
 	FUNCTION = "fn"
-	TRUE = "true"
-	FALSE = "false"
-	IF  = "if"
-	ELSE = "else"
-	RETURN = "return"
+	TRUE     = "true"
+	FALSE    = "false"
+	IF       = "if"
+	ELSE     = "else"
+	RETURN   = "return"
 )
 
 var keywords = map[string]TokenType{
-	"fn" : FUNCTION,
-	"let" : LET,
-	"true": TRUE,
-	"false":FALSE,
-	"if":IF,
-	"else":ELSE,
-	"return":RETURN,
+	"fn":     FUNCTION,
+	"let":    LET,
+	"true":   TRUE,
+	"false":  FALSE,
+	"if":     IF,
+	"else":   ELSE,
+	"return": RETURN,
 }
 
-type TokenType  string
+type TokenType string
 
 type Token struct {
-	Type TokenType
+	Type    TokenType
 	Literal string
 }
-
 
 func LookupIdent(ident string) TokenType {
 	if tok, ok := keywords[ident]; ok {

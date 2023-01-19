@@ -30,6 +30,12 @@ func Start(in io.Reader, out io.Writer) {
 
 		program := p.ParseProgram()
 
+		if len(p.Errors()) > 0 {
+			for _, err := range p.Errors() {
+				fmt.Println(err)
+			}
+		}
+
 		evaluated := eval.Eval(program)
 		if evaluated != nil {
 			io.WriteString(out, evaluated.Inspect())

@@ -3,6 +3,7 @@ package object
 const (
 	IntegerObject = "INTEGER"
 	BooleanObject = "BOOLEAN"
+	StringObject  = "STRING"
 )
 
 type ObjectType string

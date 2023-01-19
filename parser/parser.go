@@ -62,6 +62,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.FALSE, p.parseBooleanLiteral)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
+	p.registerPrefix(token.QUOTE, p.parseStringLiteral)
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
@@ -86,6 +87,10 @@ func (p *Parser) ParseProgram() *ast.Program {
 	program.Statements = []ast.Statement{}
 
 	for p.curToken.Type != token.EOF {
+		if p.curToken.Type == token.ILLEGAL {
+			p.parseError(p.curToken.Type)
+			break
+		}
 		stmt := p.parseStatement()
 		if stmt != nil {
 			program.Statements = append(program.Statements, stmt)
@@ -197,8 +202,13 @@ func (p *Parser) Errors() []string {
 	return p.errors
 }
 
+func (p *Parser) parseError(t token.TokenType) {
+	msg := fmt.Sprintf("the current token  %s is illegal token", p.peekToken.Literal)
+	p.errors = append(p.errors, msg)
+}
+
 func (p *Parser) peekError(t token.TokenType) {
-	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.peekToken.Type)
+	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.peekToken.Literal)
 	p.errors = append(p.errors, msg)
 }
 
@@ -233,6 +243,14 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 		return nil
 	}
 	i.Value = value
+	return i
+}
+
+func (p *Parser) parseStringLiteral() ast.Expression {
+	i := &ast.StringLiteral{
+		Token: p.curToken,
+		Value: p.curToken.Literal,
+	}
 	return i
 }
 

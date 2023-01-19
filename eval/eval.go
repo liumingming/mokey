@@ -17,6 +17,11 @@ func Eval(node ast.Node) object.Object {
 			ObjectType: object.IntegerObject,
 			Value:      node.Value,
 		}
+	case *ast.StringLiteral:
+		return &object.String{
+			ObjectType: object.StringObject,
+			Value:      node.Value,
+		}
 	case *ast.Boolean:
 		return &object.Boolean{
 			ObjectType: object.BooleanObject,
@@ -30,7 +35,7 @@ func Eval(node ast.Node) object.Object {
 		right := Eval(node.Right)
 		return evalPrefixExpression(node.Operator, right)
 	default:
-		fmt.Printf("node 2 is %T type", node)
+		fmt.Printf("node is %T type and node is have no eval function", node)
 	}
 	return nil
 }
