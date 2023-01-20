@@ -1,16 +1,14 @@
 package object
 
-import "fmt"
-
 type String struct {
 	ObjectType ObjectType
 	Value      string
 }
 
 func (i String) Type() ObjectType {
-	return i.ObjectType
+	return StringObject
 }
 
 func (i String) Inspect() string {
-	return fmt.Sprintf("%s", i.Value)
+	return i.Value
 }
